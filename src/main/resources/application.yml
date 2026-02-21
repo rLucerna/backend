@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: lucerna-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lucerna_db
+    username: postgres
+    password: adminpassword
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://lucerna/auth/realms/lucerna_test
+          jwk-set-uri: http://lucerna/auth/realms/lucerna_test/protocol/openid-connect/certs
+
+server:
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+logging:
+  level:
+    com.lucerna: DEBUG
+    org.springframework.security: INFO
