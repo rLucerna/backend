@@ -13,9 +13,9 @@ assignees: ''
 - **Notion 기획서 or 분석서:** 
 - **Design/wireframe:** 
 - **API Spec (Swagger/Notion):** 
--**architecture:**
--**diagram: **
--**ERD:**
+- **architecture:**
+- **diagram: **
+- **ERD:**
 
 ## 📝 기능 설명
 
