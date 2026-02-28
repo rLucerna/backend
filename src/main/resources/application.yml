@@ -8,6 +8,7 @@ spring:
     password: adminpassword
     driver-class-name: org.postgresql.Driver
 
+
   jpa:
     hibernate:
       ddl-auto: validate
