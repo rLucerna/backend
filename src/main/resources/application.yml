@@ -2,22 +2,24 @@ spring:
   application:
     name: lucerna-backend
 
+  # --- PostgreSQL 데이터소스 ---
   datasource:
     url: jdbc:postgresql://localhost:5432/lucerna_db
     username: postgres
     password: adminpassword
     driver-class-name: org.postgresql.Driver
 
-
+  # --- JPA/Hibernate 설정 ---
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: validate  # 스키마 검증만 수행 (운영 안전), 스키마 변경은 별도 마이그레이션 사용
     show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        format_sql: true  # 로그에 SQL 포맷팅 출력 (디버깅용)
 
+  # --- OAuth2 Resource Server (JWT 검증) ---
   security:
     oauth2:
       resourceserver:
@@ -25,19 +27,29 @@ spring:
           issuer-uri: http://lucerna/auth/realms/lucerna_test
           jwk-set-uri: http://lucerna/auth/realms/lucerna_test/protocol/openid-connect/certs
 
+# --- 서버 설정 ---
 server:
   port: 8081
 
+# --- Actuator (헬스체크/모니터링) ---
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics  # 외부 노출 엔드포인트 제한
   endpoint:
     health:
-      show-details: when-authorized
+      show-details: when-authorized  # 인증된 사용자만 상세 헬스 정보 확인 가능
 
+# --- Keycloak 커스텀 설정 (KeycloakProperties에서 바인딩) ---
+keycloak:
+  auth-server-url: http://lucerna/auth
+  realm: lucerna_test
+  client-id: lucerna-app
+  token-uri: http://lucerna/auth/realms/lucerna_test/protocol/openid-connect/token
+
+# --- 로깅 레벨 ---
 logging:
   level:
-    com.lucerna: DEBUG
-    org.springframework.security: INFO
+    com.lucerna: DEBUG              # 애플리케이션 로그: DEBUG
+    org.springframework.security: INFO  # Security 로그: INFO (너무 많은 출력 방지)
