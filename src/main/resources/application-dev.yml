@@ -1,0 +1,34 @@
+spring:
+  # --- 데이터소스 (로컬 -> Docker postgres) ---
+  datasource:
+    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/lucerna_db
+    username: postgres
+    password: adminpassword
+
+  # --- JPA ---
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  # --- DevTools 핫 리로드 ---
+  devtools:
+    restart:
+      enabled: true
+      poll-interval: 2s
+      quiet-period: 1s
+
+  # --- OAuth2 JWT (로컬 -> Docker keycloak) ---
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/auth/realms/lucerna_test
+          jwk-set-uri: http://localhost:8080/auth/realms/lucerna_test/protocol/openid-connect/certs
+
+# --- Keycloak 커스텀 설정 (로컬 -> Docker keycloak) ---
+keycloak:
+  auth-server-url: http://localhost:8080/auth
+  realm: lucerna_test
+  client-id: lucerna-app
+  token-uri: http://localhost:8080/auth/realms/lucerna_test/protocol/openid-connect/token

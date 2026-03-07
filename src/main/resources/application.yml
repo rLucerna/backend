@@ -2,6 +2,9 @@ spring:
   application:
     name: lucerna-backend
 
+  profiles:
+    active: dev
+
   # --- PostgreSQL 데이터소스 ---
   datasource:
     url: jdbc:postgresql://localhost:5432/lucerna_db
@@ -23,9 +26,6 @@ spring:
   security:
     oauth2:
       resourceserver:
-        jwt:
-          issuer-uri: http://lucerna/auth/realms/lucerna_test
-          jwk-set-uri: http://lucerna/auth/realms/lucerna_test/protocol/openid-connect/certs
 
 # --- 서버 설정 ---
 server:
@@ -43,10 +43,10 @@ management:
 
 # --- Keycloak 커스텀 설정 (KeycloakProperties에서 바인딩) ---
 keycloak:
-  auth-server-url: http://lucerna/auth
-  realm: lucerna_test
-  client-id: lucerna-app
-  token-uri: http://lucerna/auth/realms/lucerna_test/protocol/openid-connect/token
+  auth-server-url:
+  realm:
+  client-id:
+  token-uri:
 
 # --- 로깅 레벨 ---
 logging:
