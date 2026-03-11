@@ -7,8 +7,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration // "스프링아, 서버 켜질 때 이 설정 파일부터 읽어줘!"
-@EnableWebSecurity // "스프링 시큐리티(경호원) 설정 내가 직접 할게!"
+@Configuration // "스프링, 서버 켜질 때 이 설정 파일부터 읽어줘!"
+@EnableWebSecurity // "스프링 시큐리티 설정 내가 직접 하는것!"
 public class SecurityConfig {
 
     @Bean
@@ -19,7 +19,7 @@ public class SecurityConfig {
 
                 // 2. 요청 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        // 🔥 우리가 만든 수첩 API 주소는 토큰(신분증) 없이도 무조건 통과!
+                        // 우리가 만든 수첩 API 주소는 토큰(신분증) 없이도 무조건 통과
                         // TODO: 프론트 연동 전까지 임시로 권한 오픈
                         .requestMatchers("/api/v1/notebooks/**").permitAll()
 

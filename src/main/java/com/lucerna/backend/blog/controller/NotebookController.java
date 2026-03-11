@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController // "여기는 화면(HTML)이 아니라 데이터(JSON)만 반환하는 API 전용 입구입니다!" 선언
+@RestController // "여기는 화면(HTML)이 아니라 데이터(JSON)만 반환하는 API 전용 입구" 선언
 @RequestMapping("/api/v1/notebooks") // 이 입구의 기본 주소는 '/api/v1/notebooks'로 통일!
 @RequiredArgsConstructor
 public class NotebookController {
