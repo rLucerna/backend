@@ -123,4 +123,32 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.error.code").value("AUTH_003"));
     }
+
+    @Test
+    @DisplayName("POST /auth/refresh-dev - form 파라미터로 200과 TokenResponse 직접 반환")
+    void refreshDev_success() throws Exception {
+        given(pkceTokenService.refreshToken(any(RefreshRequest.class))).willReturn(MOCK_TOKEN);
+
+        mockMvc.perform(post("/auth/refresh-dev")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("refresh_token", "valid-refresh-token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.access_token").value("access-token"))
+                .andExpect(jsonPath("$.refresh_token").value("refresh-token"))
+                .andExpect(jsonPath("$.token_type").value("Bearer"));
+    }
+
+    @Test
+    @DisplayName("POST /auth/refresh-dev - 만료된 토큰 시 400 반환")
+    void refreshDev_expiredToken_returns400() throws Exception {
+        given(pkceTokenService.refreshToken(any(RefreshRequest.class)))
+                .willThrow(new BusinessException(ErrorCode.AUTH_INVALID_REFRESH_TOKEN));
+
+        mockMvc.perform(post("/auth/refresh-dev")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("refresh_token", "expired-token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("AUTH_003"));
+    }
 }

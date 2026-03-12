@@ -59,4 +59,18 @@ public class AuthController {
         return ResponseEntity.ok(CommonResponse.success(tokenResponse));
     }
 
+    // [DEV-ONLY] Postman OAuth2 내장 클라이언트 토큰 갱신 테스트용
+    // Postman의 OAuth2 자동 갱신은 RFC 6749에 따라 form-encoded를 전송하므로
+    // /auth/refresh(@RequestBody JSON)로는 파싱 불가 → HttpServletRequest로 직접 수신
+    // 실서비스 전환 시 이 메서드 삭제할 것
+    @PostMapping("/refresh-dev")
+    public ResponseEntity<TokenResponse> refreshDev(HttpServletRequest request) {
+        String refreshToken = request.getParameter("refresh_token");
+        log.debug("[DEV] refresh-dev 수신 → refresh_token={}", refreshToken != null ? "present" : "null");
+
+        TokenResponse tokenResponse = pkceTokenService.refreshToken(new RefreshRequest(refreshToken));
+        return ResponseEntity.ok(tokenResponse);
+    }
+
 }
+
