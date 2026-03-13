@@ -5,11 +5,11 @@ spring:
   profiles:
     active: dev
 
-  # --- PostgreSQL 데이터소스 ---
+  # --- PostgreSQL 데이터소스 (서비스 DB) ---
   datasource:
-    url: jdbc:postgresql://localhost:5432/lucerna_db
-    username: postgres
-    password: adminpassword
+    url: jdbc:postgresql://localhost:5433/lucerna_service
+    username: lucerna
+    password: lucerna1234
     driver-class-name: org.postgresql.Driver
 
   # --- JPA/Hibernate 설정 ---

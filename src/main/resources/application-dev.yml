@@ -1,9 +1,9 @@
 spring:
-  # --- 데이터소스 (로컬 -> Docker postgres) ---
+  # --- 데이터소스 (로컬 -> Docker postgres-service) ---
   datasource:
-    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/lucerna_db
-    username: postgres
-    password: adminpassword
+    url: jdbc:postgresql://localhost:5433/lucerna_service
+    username: lucerna
+    password: lucerna1234
 
   # --- JPA ---
   jpa:
