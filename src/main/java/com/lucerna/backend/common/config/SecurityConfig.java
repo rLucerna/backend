@@ -34,7 +34,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 엔드포인트별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/actuator/health").permitAll()
+                        .requestMatchers("/auth/**", "/actuator/health", "/api/v1/volunteers/**").permitAll()
                         .anyRequest().authenticated())
                 // Keycloak JWT 검증 및 역할 변환
                 .oauth2ResourceServer(oauth2 -> oauth2

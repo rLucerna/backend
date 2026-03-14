@@ -32,7 +32,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")    // JPA/Hibernate
     implementation("org.springframework.boot:spring-boot-starter-validation")  // Bean Validation (@Valid)
     implementation("org.springframework.boot:spring-boot-starter-actuator")    // 헬스체크/모니터링
-
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     // === Database ===
     runtimeOnly("org.postgresql:postgresql")  // PostgreSQL JDBC 드라이버
 
