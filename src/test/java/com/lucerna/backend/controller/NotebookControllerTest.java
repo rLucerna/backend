@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional // 🔥 아주 중요! 테스트가 끝나면 DB에 넣었던 데이터를 깔끔하게 롤백(삭제)해 줍니다.
+@Transactional //테스트가 끝나면 DB에 넣었던 데이터를 깔끔하게 롤백(삭제)해 줍니다.
 class NotebookControllerTest {
 
     @Autowired

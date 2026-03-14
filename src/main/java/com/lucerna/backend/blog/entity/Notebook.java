@@ -18,15 +18,16 @@ import java.time.LocalDateTime;
 public class Notebook {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)//ID번호 1,2,3.. 순서대로 1씩 증가시키면서 넣어줘
-    private Long id; // 수첩 식별자 (PK)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)//ID번호 1,2,3.. 순서대로 1씩 증가시키면서 넣음
+    private Long id; // 수첩 PK
 
     /*
      * TODO: 추후 Lodge(오두막) 엔티티가 만들어지면 연관관계 매핑(@ManyToOne)으로 변경 가능.
      * 현재는 ERD에 맞춰 BIGINT(Long) 타입으로 연결만 해둡니다.
      */
+
     @Column(name = "lodge_id", nullable = false)
-    private Long lodgeId;
+    private Long lodgeId;// 오두막 아이디
 
     @Column(nullable = false, length = 100)
     private String name; // 수첩 이름

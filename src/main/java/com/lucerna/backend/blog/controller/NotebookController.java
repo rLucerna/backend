@@ -21,10 +21,10 @@ public class NotebookController {
     @PostMapping
     public ResponseEntity<NotebookResponse> createNotebook(@RequestBody NotebookCreateRequest request) {
 
-        // 1. 웨이터(Controller)가 손님(Postman)의 주문서(@RequestBody)를 받아서 주방장(Service)에게 전달!
+        // 1. Controller가 Postman의 @RequestBody를 받아서 Service에게 전달
         NotebookResponse response = notebookService.createNotebook(request);
 
-        // 2. 주방장이 요리를 성공적으로 마치면, 상태 코드 '201 Created(생성됨)'와 함께 완성된 수첩 데이터를 서빙!
+        // 2. 성공적으로 마치면, 상태 코드 '201 Created(생성됨)'와 함께 완성된 수첩 데이터를 서빙
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

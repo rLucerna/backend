@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service // "비즈니스 로직을 처리" 선언
+@Service //비즈니스 로직을 처리한다
 @RequiredArgsConstructor // Repository를 자동으로 불러와 줌
 public class NotebookService {
 
@@ -39,7 +39,7 @@ public class NotebookService {
                 .collectionSum(0) // 새 수첩이니까 수집 합은 0
                 .build();
 
-        // 3. Repository에 DB에 저장하라고 명령!
+        // 3. Repository에 DB에 저장하라고 명령
         Notebook savedNotebook = notebookRepository.save(notebook);
 
         // 4. 저장 완료된 Entity를 다시 Response DTO 상자에 담아서 준비
