@@ -69,5 +69,17 @@
 4. 오두막 - 싸이월드 미니홈피 형태의 폐쇄형 가상 커뮤니티
 5. 등불 - 기름(기부)+성냥(봉사) 아이템으로 오두막 등불 점등
 
+## 인프라 구조 (infra/ 디렉터리)
+- 모노레포: `lucerna/` → `lucerna-backend/`, `infra/`, `manifest/`
+- 개발 환경: Spring Boot 로컬 실행 + PostgreSQL/Keycloak Docker Compose
+- 프로덕션 목표: GCP (Cloud Run + Cloud SQL + GKE)
+- Docker Compose Override 패턴: base → dev/prod → member(개인)
+- 포트: Spring Boot 8081, PostgreSQL 5432, Keycloak 8080
+
+## 다음 구현 예정 기능 (순서대로)
+1. 사용자 정보 조회
+2. 로그아웃
+3. 회원 탈퇴
+
 ## 상세 내용
 - `.claude/architecture.md` 참고 (패키지 구조, 테스트 패턴)

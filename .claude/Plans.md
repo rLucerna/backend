@@ -57,6 +57,40 @@ Spring Boot → 앱
 
 ---
 
+## [FEAT-003] 사용자 정보 조회 (`GET /api/v1/users/me`)
+
+> 구현 완료 — 2026-03-13
+
+### 개요
+
+앱 구동 시 사용자 상태 동기화, 마이페이지 렌더링, 첫 소셜 로그인 후 가입 마무리를 단일 엔드포인트로 통합.
+JWT 인증 완료 후 서비스 DB에 사용자가 없으면 JIT(Just-In-Time) 생성, 있으면 프로필 반환.
+
+### JIT 생성 전략
+
+| 단계 | 생성 데이터 | 시점 |
+|------|-----------|------|
+| JIT 생성 | `users` 레코드 (status=ACTIVE) | `GET /users/me` 최초 호출 |
+| Onboarding | `lodges` (닉네임, 소개 등) | 추후 `PATCH /users/me/lodge` |
+| 설정 | `user_app_conf` (JSONB) | 추후 `PUT /users/me/settings` |
+
+### 파일 목록
+
+| 파일 | 설명 |
+|------|------|
+| `user/entity/UserStatus.java` | ACTIVE, INACTIVE, DELETED enum |
+| `user/entity/User.java` | users 테이블 Entity (extends BaseEntity) |
+| `user/entity/Lodge.java` | lodges 테이블 Entity |
+| `user/repository/UserRepository.java` | `findByKeycloakId(String)` |
+| `user/repository/LodgeRepository.java` | `findByUserId(Long)` |
+| `user/dto/UserMeResponse.java` | 응답 DTO record |
+| `user/dto/LodgeSummary.java` | Lodge 요약 DTO record |
+| `user/service/UserService.java` | `getOrCreateUser` JIT 로직 |
+| `user/controller/UserController.java` | `GET /api/v1/users/me` |
+| `ErrorCode.java` | `USER_NOT_FOUND`, `USER_EMAIL_NOT_FOUND` 추가 |
+
+---
+
 ### 필요한 Spring Boot 구성 요소
 
 #### DTO

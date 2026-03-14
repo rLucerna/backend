@@ -93,7 +93,43 @@ API 호출
 
 ---
 
-## [FEAT-003] 소셜 인증 (Google / Apple / Kakao)
+## [FEAT-003] 사용자 정보 조회 (`GET /api/v1/users/me`)
+
+**기능 이름**: 사용자 정보 JIT 조회/생성
+**현황**: `완료`
+
+---
+
+### 작업 로그
+
+| 단계 | 내용 | 상태 |
+|------|------|------|
+| User Entity 설계 | `User` (extends BaseEntity), `UserStatus` enum, `Lodge` | ✅ 완료 |
+| Repository 생성 | `UserRepository.findByKeycloakId()`, `LodgeRepository.findByUserId()` | ✅ 완료 |
+| ErrorCode 추가 | `USER_NOT_FOUND(USER_001)`, `USER_EMAIL_NOT_FOUND(USER_002)` | ✅ 완료 |
+| DTO 생성 | `UserMeResponse`, `LodgeSummary` record | ✅ 완료 |
+| Service 구현 | `UserService.getOrCreateUser()` — JIT 생성 + lastLoginAt 갱신 | ✅ 완료 |
+| Controller 구현 | `GET /api/v1/users/me` — `@AuthenticationPrincipal Jwt` | ✅ 완료 |
+| 단위 테스트 | `UserServiceTest` (7개), `UserControllerTest` (2개) | ✅ 완료 |
+
+### API 엔드포인트
+
+| 메서드 | 경로 | 응답 형식 | 설명 |
+|--------|------|-----------|------|
+| GET | `/api/v1/users/me` | `CommonResponse<UserMeResponse>` | 현재 사용자 조회 (없으면 JIT 생성) |
+
+### JIT 생성 흐름
+
+```
+getOrCreateUser(keycloakId, email)
+├─ findByKeycloakId(keycloakId)
+│  ├─ 존재 → lastLoginAt 갱신 + Lodge 조회 → UserMeResponse(isNewUser=false)
+│  └─ 미존재 → User.createNewUser() → save → UserMeResponse(isNewUser=true, lodge=null)
+```
+
+---
+
+## [FEAT-004] 소셜 인증 (Google / Apple / Kakao)
 
 **현황**: `계획 중` → `Plans.md` 참고
 

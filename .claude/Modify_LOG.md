@@ -1,5 +1,32 @@
 ---
 
+날짜: 2026-03-13
+작업 이름: FEAT-003 사용자 정보 조회 API 구현
+수정 대상: ErrorCode.java
+신규 파일: UserStatus.java, User.java, Lodge.java, UserRepository.java, LodgeRepository.java, UserMeResponse.java, LodgeSummary.java, UserService.java, UserController.java, UserServiceTest.java, UserControllerTest.java
+결과: GET /api/v1/users/me — JIT 사용자 생성 + 기존 유저 조회 기능 구현 완료
+
+---
+
+## 구현 내용
+
+### ErrorCode 추가
+- `USER_001`: 사용자를 찾을 수 없습니다 (404)
+- `USER_002`: JWT에 이메일 정보가 포함되어 있지 않습니다 (400)
+
+### JIT 생성 전략
+- 최초 호출 시 `users` 레코드만 생성 (status=ACTIVE)
+- Lodge, user_app_conf 등은 별도 Onboarding API에서 생성 예정
+- 기존 유저 재접속 시 `lastLoginAt` dirty checking으로 갱신
+
+### Entity 설계
+- `User`: BaseEntity 상속, `keycloakId` UNIQUE, 정적 팩토리 `createNewUser()`
+- `Lodge`: BaseEntity 미상속 (스키마에 audit 컬럼 없음), `userId` FK 직접 매핑
+
+---
+
+---
+
 날짜: 2026-03-07
 작업 이름: JWT 토큰 검증 + 만료 대응 구현
 수정 대상: ErrorCode.java, SecurityConfig.java

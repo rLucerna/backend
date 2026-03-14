@@ -68,6 +68,11 @@ com.lucerna.backend
 | JWT Issuer URI | `http://lucerna/auth/realms/lucerna_test` |
 | PostgreSQL | `localhost:5432/lucerna_db` (port-forward: 65432) |
 
+## 로컬 개발 환경
+spring boot은 로컬 host pc에 설치, 나머지 db, keycloak 등 다른 서비스는 docker compose로
+container화. docker compose 설정 파일과 infra 설계 문서는 다음의 git repository 주소를 참고할 것
+infra repo: https://github.com/rLucerna/infra.git
+
 ---
 
 ## 테스트 패턴
