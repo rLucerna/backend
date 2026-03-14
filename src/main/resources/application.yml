@@ -15,7 +15,7 @@ spring:
   # --- JPA/Hibernate 설정 ---
   jpa:
     hibernate:
-      ddl-auto: validate  # 스키마 검증만 수행 (운영 안전), 스키마 변경은 별도 마이그레이션 사용
+      ddl-auto: update  # dev/test 환경: 자동 스키마 생성/업데이트, 운영: validate + 마이그레이션 사용
     show-sql: false
     properties:
       hibernate:
@@ -51,5 +51,6 @@ keycloak:
 # --- 로깅 레벨 ---
 logging:
   level:
+    root: INFO
     com.lucerna: DEBUG              # 애플리케이션 로그: DEBUG
     org.springframework.security: INFO  # Security 로그: INFO (너무 많은 출력 방지)

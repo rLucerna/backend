@@ -32,3 +32,9 @@ keycloak:
   realm: lucerna_test
   client-id: lucerna-app
   token-uri: http://localhost:8080/auth/realms/lucerna_test/protocol/openid-connect/token
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE  # 바인드 파라미터 값도 출력 (? → 실제값)
+    org.hibernate.orm.jdbc.extract: TRACE  # 결과 추출 과정도 출력

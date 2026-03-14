@@ -24,6 +24,10 @@ public enum ErrorCode {
     AUTH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_006", "유효하지 않은 토큰입니다"),
     AUTH_FORBIDDEN(HttpStatus.FORBIDDEN, "AUTH_007", "접근 권한이 없습니다"),
 
+    // === User 관련 ===
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_001", "사용자를 찾을 수 없습니다"),
+    USER_EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER_002", "JWT에 이메일 정보가 포함되어 있지 않습니다"),
+
     // === Common ===
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "COMMON_001", "입력값이 올바르지 않습니다"),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON_500", "서버 내부 오류가 발생했습니다");
