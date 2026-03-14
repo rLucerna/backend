@@ -20,6 +20,14 @@ public enum ErrorCode {
     AUTH_TOKEN_EXCHANGE_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_002", "토큰 교환에 실패했습니다"),
     AUTH_INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "AUTH_003", "유효하지 않은 Refresh Token입니다"),
     AUTH_UNSUPPORTED_PROVIDER(HttpStatus.BAD_REQUEST, "AUTH_004", "지원하지 않는 소셜 Provider입니다"),
+    AUTH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH_005", "액세스 토큰이 만료되었습니다. 토큰을 갱신해주세요"),
+    AUTH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_006", "유효하지 않은 토큰입니다"),
+    AUTH_FORBIDDEN(HttpStatus.FORBIDDEN, "AUTH_007", "접근 권한이 없습니다"),
+    AUTH_LOGOUT_FAILED(HttpStatus.BAD_REQUEST, "AUTH_008", "로그아웃에 실패했습니다"),
+
+    // === User 관련 ===
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_001", "사용자를 찾을 수 없습니다"),
+    USER_EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER_002", "JWT에 이메일 정보가 포함되어 있지 않습니다"),
 
     // === Common ===
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "COMMON_001", "입력값이 올바르지 않습니다"),

@@ -1,5 +1,8 @@
 package com.lucerna.backend.common.config;
 
+import com.lucerna.backend.auth.handler.JwtAccessDeniedHandler;
+import com.lucerna.backend.auth.handler.JwtAuthenticationEntryPoint;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,10 +22,16 @@ import java.util.stream.Collectors;
  * - JWT 기반 Stateless 인증 (Keycloak OAuth2 Resource Server)
  * - CSRF 비활성화 (REST API 서버이므로 불필요)
  * - 공개 엔드포인트: /auth/**, /actuator/health
+ * - 인증 실패: JwtAuthenticationEntryPoint (만료/무효 구분 401)
+ * - 권한 없음: JwtAccessDeniedHandler (403)
  */
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,10 +45,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/actuator/health").permitAll()
                         .anyRequest().authenticated())
+                // 인증/권한 실패 시 CommonResponse 형식으로 응답
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler))
                 // Keycloak JWT 검증 및 역할 변환
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(keycloakJwtAuthenticationConverter())))
+                                .jwtAuthenticationConverter(keycloakJwtAuthenticationConverter()))
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .build();
     }
 
