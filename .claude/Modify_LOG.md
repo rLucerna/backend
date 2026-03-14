@@ -1,5 +1,32 @@
 ---
 
+날짜: 2026-03-14
+작업 이름: FEAT-004 로그아웃 방식 재설계 — OIDC RP-Initiated Logout으로 전환
+수정 대상: PkceTokenService.java, AuthController.java, KeycloakProperties.java, LogoutRequest.java, application.yml, application-dev.yml, ErrorCode.java
+결과: POST /auth/logout — id_token_hint 기반 세션 종료 + RT revoke (보험용)
+
+---
+
+## 구현 내용
+
+### Keycloak Logout 엔드포인트 호출
+- `PkceTokenService.logout()` 메서드 추가
+- Keycloak `/protocol/openid-connect/logout`으로 RT 전송
+- 기존 RestClient + SimpleClientHttpRequestFactory 패턴 재사용
+
+### 설정 변경
+- `KeycloakProperties`에 `logoutUri` 필드 추가
+- `application-dev.yml`에 `keycloak.logout-uri` 설정 추가
+
+### 설계 분석
+- JWT Stateless 환경에서의 로그아웃 한계 분석 → `.claude/analysis/auth.md`
+- AT revoke 미수행 결정 (AT 짧은 만료 + 앱 토큰 삭제로 충분)
+- Redis Blacklist 미도입 (현 단계 오버 엔지니어링)
+
+---
+
+---
+
 날짜: 2026-03-13
 작업 이름: FEAT-003 사용자 정보 조회 API 구현
 수정 대상: ErrorCode.java

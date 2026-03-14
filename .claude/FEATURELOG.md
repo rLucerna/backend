@@ -129,7 +129,53 @@ getOrCreateUser(keycloakId, email)
 
 ---
 
-## [FEAT-004] 소셜 인증 (Google / Apple / Kakao)
+## [FEAT-004] 로그아웃
+
+**기능 이름**: Keycloak 세션 종료 + Refresh Token 무효화
+**현황**: `완료`
+
+---
+
+### 구현 내용
+
+| 파일 | 역할 |
+|------|------|
+| `auth/dto/LogoutRequest.java` | 로그아웃 요청 DTO (`idToken`, `refreshToken`) |
+| `PkceTokenService.terminateSession()` | OIDC RP-Initiated Logout (`/logout` + `id_token_hint`) — 세션 종료 (필수) |
+| `PkceTokenService.tryRevokeRefreshToken()` | RFC 7009 RT revoke (`/revoke`) — 보험용, 실패 시 경고만 |
+| `AuthController` | `POST /auth/logout` 엔드포인트 |
+| `KeycloakProperties` | `logoutUri`, `revokeUri` 필드 |
+| `ErrorCode` | `AUTH_LOGOUT_FAILED(AUTH_008)` 추가 |
+| `application-dev.yml` | `keycloak.logout-uri`, `keycloak.revoke-uri` 설정 |
+
+### 로그아웃 흐름
+
+```
+POST /auth/logout { idToken, refreshToken }
+    ↓
+1단계: POST /logout?id_token_hint=<id_token>
+  → id_token의 sid claim으로 Keycloak 서버 세션 삭제
+  → 해당 세션의 AT/RT/ID token 모두 무효화
+  → 실패 시 AUTH_LOGOUT_FAILED 예외
+
+2단계: POST /revoke?token=<refresh_token> [보험용]
+  → Public Client는 revoke 미동작 가능 → 실패해도 예외 없음
+  → 1단계 세션 종료로 이미 무효화됨
+```
+
+### API 엔드포인트
+
+| 메서드 | 경로 | 응답 형식 | 설명 |
+|--------|------|-----------|------|
+| POST | `/auth/logout` | `CommonResponse<Void>` | Keycloak 세션 종료 + RT 무효화 |
+
+### 설계 근거
+
+→ `.claude/analysis/auth.md` 참고
+
+---
+
+## [FEAT-005] 소셜 인증 (Google / Apple / Kakao)
 
 **현황**: `계획 중` → `Plans.md` 참고
 
