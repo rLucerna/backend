@@ -1,5 +1,6 @@
 package com.lucerna.backend.auth.controller;
 
+import com.lucerna.backend.auth.dto.LogoutRequest;
 import com.lucerna.backend.auth.dto.RefreshRequest;
 import com.lucerna.backend.auth.dto.TokenRequest;
 import com.lucerna.backend.auth.dto.TokenResponse;
@@ -57,6 +58,20 @@ public class AuthController {
     public ResponseEntity<CommonResponse<TokenResponse>> refresh(@Valid @RequestBody RefreshRequest request) {
         TokenResponse tokenResponse = pkceTokenService.refreshToken(request);
         return ResponseEntity.ok(CommonResponse.success(tokenResponse));
+    }
+
+    /**
+     * 로그아웃 — Keycloak 세션 종료 + Refresh Token 무효화
+     * POST /auth/logout
+     *
+     * TODO: 추후 Spring Security OAuth2 Client로 전환 시
+     *   OidcClientInitiatedLogoutSuccessHandler를 이용해 end_session_endpoint 자동 처리 가능.
+     *   http.logout(logout -> logout.logoutSuccessHandler(oidcLogoutSuccessHandler()))
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<CommonResponse<Void>> logout(@Valid @RequestBody LogoutRequest request) {
+        pkceTokenService.logout(request.idToken(), request.refreshToken());
+        return ResponseEntity.ok(CommonResponse.success());
     }
 
     // [DEV-ONLY] Postman OAuth2 내장 클라이언트 토큰 갱신 테스트용

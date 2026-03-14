@@ -23,6 +23,7 @@ public enum ErrorCode {
     AUTH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH_005", "액세스 토큰이 만료되었습니다. 토큰을 갱신해주세요"),
     AUTH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_006", "유효하지 않은 토큰입니다"),
     AUTH_FORBIDDEN(HttpStatus.FORBIDDEN, "AUTH_007", "접근 권한이 없습니다"),
+    AUTH_LOGOUT_FAILED(HttpStatus.BAD_REQUEST, "AUTH_008", "로그아웃에 실패했습니다"),
 
     // === User 관련 ===
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_001", "사용자를 찾을 수 없습니다"),

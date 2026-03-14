@@ -62,6 +62,78 @@ public class PkceTokenService {
     }
 
     /**
+     * 로그아웃 — OIDC 세션 종료 + RT revoke (보험용).
+     *
+     * 1단계: OIDC RP-Initiated Logout (/logout + id_token_hint)
+     *   - id_token의 sid claim으로 Keycloak 서버 세션을 식별하여 삭제
+     *   - 세션 삭제 시 해당 세션의 모든 토큰(AT, RT, ID token)이 무효화됨
+     *   - Keycloak 18+에서 id_token_hint 없이 호출 시 세션 종료 안 됨 → 필수 파라미터
+     *
+     * 2단계: RFC 7009 RT Revoke (/revoke) — 보험용, 실패 시 예외 미발생
+     *   - Public Client는 client_secret 없어 revoke가 실제로 동작하지 않을 수 있음
+     *   - 1단계 세션 종료만으로 RT는 이미 무효화되므로 2단계는 방어적 처리
+     */
+    public void logout(String idToken, String refreshToken) {
+        terminateSession(idToken);
+        tryRevokeRefreshToken(refreshToken);
+    }
+
+    private void terminateSession(String idToken) {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("client_id", keycloakProperties.getClientId());
+        formData.add("id_token_hint", idToken);
+
+        log.debug("Keycloak 세션 종료 요청 → uri={}", keycloakProperties.getLogoutUri());
+        try {
+            restClient.post()
+                    .uri(keycloakProperties.getLogoutUri())
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body(formData)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                        String body = new String(res.getBody().readAllBytes(), StandardCharsets.UTF_8);
+                        log.warn("Keycloak logout 4xx 오류 → status={}, body={}", res.getStatusCode(), body);
+                        throw new BusinessException(ErrorCode.AUTH_LOGOUT_FAILED);
+                    })
+                    .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                        String body = new String(res.getBody().readAllBytes(), StandardCharsets.UTF_8);
+                        log.error("Keycloak logout 5xx 오류 → status={}, body={}", res.getStatusCode(), body);
+                        throw new BusinessException(ErrorCode.AUTH_TOKEN_EXCHANGE_FAILED);
+                    })
+                    .toBodilessEntity();
+
+            log.debug("Keycloak 세션 종료 성공");
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Keycloak 세션 종료 중 오류 발생: {}", e.getMessage(), e);
+            throw new BusinessException(ErrorCode.AUTH_TOKEN_EXCHANGE_FAILED);
+        }
+    }
+
+    private void tryRevokeRefreshToken(String refreshToken) {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("client_id", keycloakProperties.getClientId());
+        formData.add("token", refreshToken);
+        formData.add("token_type_hint", "refresh_token");
+
+        log.debug("Keycloak RT revoke 시도 (보험용) → uri={}", keycloakProperties.getRevokeUri());
+        try {
+            restClient.post()
+                    .uri(keycloakProperties.getRevokeUri())
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body(formData)
+                    .retrieve()
+                    .toBodilessEntity();
+
+            log.debug("Keycloak RT revoke 성공");
+        } catch (Exception e) {
+            // Public Client는 revoke가 실패할 수 있음. 세션은 이미 종료되었으므로 경고만 기록
+            log.warn("Keycloak RT revoke 실패 (세션 종료로 이미 무효화됨): {}", e.getMessage());
+        }
+    }
+
+    /**
      * Refresh Token으로 신규 토큰 발급
      */
     public TokenResponse refreshToken(RefreshRequest request) {

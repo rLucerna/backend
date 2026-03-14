@@ -32,6 +32,8 @@ keycloak:
   realm: lucerna_test
   client-id: lucerna-app
   token-uri: http://localhost:8080/auth/realms/lucerna_test/protocol/openid-connect/token
+  logout-uri: http://localhost:8080/auth/realms/lucerna_test/protocol/openid-connect/logout
+  revoke-uri: http://localhost:8080/auth/realms/lucerna_test/protocol/openid-connect/revoke
 
 logging:
   level:

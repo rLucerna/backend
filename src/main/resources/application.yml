@@ -47,6 +47,8 @@ keycloak:
   realm:
   client-id:
   token-uri:
+  logout-uri:
+  revoke-uri:
 
 # --- 로깅 레벨 ---
 logging:

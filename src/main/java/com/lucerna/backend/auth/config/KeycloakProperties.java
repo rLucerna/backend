@@ -11,4 +11,6 @@ public class KeycloakProperties {
     private String realm;
     private String clientId;
     private String tokenUri;
+    private String logoutUri;
+    private String revokeUri;
 }
