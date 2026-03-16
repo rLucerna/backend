@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface LodgeRepository extends JpaRepository<Lodge, Long> {
     Optional<Lodge> findByUserId(Long userId);
+
+    void deleteByUserId(Long userId);
 }

@@ -51,4 +51,22 @@ public class User extends BaseEntity {
     public void updateLastLogin() {
         this.lastLoginAt = LocalDateTime.now();
     }
+
+    /**
+     * 회원 탈퇴 처리 (Soft Delete).
+     * - status = DELETED → 서비스 접근 즉시 차단
+     * - email은 30일 후 배치에서 마스킹 (유예 기간 내 복구 가능성 보존)
+     * - keycloakId 유지 → 30일 배치 시 Keycloak 사용자 완전 삭제에 필요
+     */
+    public void withdraw() {
+        this.status = UserStatus.DELETED;
+    }
+
+    /**
+     * 개인정보 마스킹 — 30일 배치에서 호출.
+     * Hard Delete 직전 식별 불가 처리.
+     */
+    public void maskPersonalInfo() {
+        this.email = "deleted_" + this.id + "@deleted.invalid";
+    }
 }

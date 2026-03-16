@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,5 +29,16 @@ public class UserController {
         String email = jwt.getClaimAsString("email");
         UserMeResponse response = userService.getOrCreateUser(keycloakId, email);
         return ResponseEntity.ok(CommonResponse.success(response));
+    }
+
+    /**
+     * 회원 탈퇴 — 서비스 DB Soft Delete + Keycloak 사용자 비활성화
+     * DELETE /api/v1/users/me
+     */
+    @DeleteMapping("/me")
+    public ResponseEntity<CommonResponse<Void>> withdraw(@AuthenticationPrincipal Jwt jwt) {
+        String keycloakId = jwt.getSubject();
+        userService.withdraw(keycloakId);
+        return ResponseEntity.ok(CommonResponse.success());
     }
 }

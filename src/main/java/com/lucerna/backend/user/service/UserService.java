@@ -1,10 +1,12 @@
 package com.lucerna.backend.user.service;
 
+import com.lucerna.backend.auth.service.KeycloakAdminService;
 import com.lucerna.backend.common.exception.BusinessException;
 import com.lucerna.backend.common.exception.ErrorCode;
 import com.lucerna.backend.user.dto.LodgeSummary;
 import com.lucerna.backend.user.dto.UserMeResponse;
 import com.lucerna.backend.user.entity.User;
+import com.lucerna.backend.user.entity.UserStatus;
 import com.lucerna.backend.user.repository.LodgeRepository;
 import com.lucerna.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final LodgeRepository lodgeRepository;
+    private final KeycloakAdminService keycloakAdminService;
 
     /**
      * keycloakId로 사용자 조회. 없으면 JIT 생성.
@@ -39,6 +42,10 @@ public class UserService {
     }
 
     private UserMeResponse handleExistingUser(User user) {
+        if (user.getStatus() == UserStatus.DELETED) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+
         user.updateLastLogin();
 
         LodgeSummary lodge = lodgeRepository.findByUserId(user.getId())
@@ -52,5 +59,32 @@ public class UserService {
         User newUser = User.createNewUser(keycloakId, email);
         userRepository.save(newUser);
         return UserMeResponse.of(newUser, true, null);
+    }
+
+    /**
+     * 회원 탈퇴.
+     *
+     * 1단계 (서비스 DB Soft Delete + 마스킹):
+     *   - User.status = DELETED, email 마스킹
+     *   - Lodge Hard Delete
+     *   실패 시 @Transactional 롤백
+     *
+     * 2단계 (Keycloak 사용자 비활성화):
+     *   - enabled = false → 모든 세션 즉시 종료
+     *   실패 시 예외 발생 → 1단계 @Transactional 롤백
+     */
+    @Transactional
+    public void withdraw(String keycloakId) {
+        User user = userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getStatus() == UserStatus.DELETED) {
+            throw new BusinessException(ErrorCode.USER_ALREADY_WITHDRAWN);
+        }
+
+        user.withdraw();
+        lodgeRepository.deleteByUserId(user.getId());
+
+        keycloakAdminService.disableUser(keycloakId);
     }
 }

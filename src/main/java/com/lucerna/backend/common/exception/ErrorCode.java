@@ -28,6 +28,8 @@ public enum ErrorCode {
     // === User 관련 ===
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_001", "사용자를 찾을 수 없습니다"),
     USER_EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER_002", "JWT에 이메일 정보가 포함되어 있지 않습니다"),
+    USER_ALREADY_WITHDRAWN(HttpStatus.BAD_REQUEST, "USER_003", "이미 탈퇴한 사용자입니다"),
+    USER_WITHDRAW_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "USER_004", "회원 탈퇴 처리 중 오류가 발생했습니다"),
 
     // === Common ===
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "COMMON_001", "입력값이 올바르지 않습니다"),

@@ -34,6 +34,8 @@ keycloak:
   token-uri: http://localhost:8080/auth/realms/lucerna_test/protocol/openid-connect/token
   logout-uri: http://localhost:8080/auth/realms/lucerna_test/protocol/openid-connect/logout
   revoke-uri: http://localhost:8080/auth/realms/lucerna_test/protocol/openid-connect/revoke
+  admin-client-id: lucerna-admin
+  admin-client-secret: 7kDkjrWMr8HxWMrKyeXDsTgJLv6xqTjY  #개발 환경이므로 환경 변수  노출. 추후 실제로 배포까지 이어진다면 분리할 필요가 있다.
 
 logging:
   level:
