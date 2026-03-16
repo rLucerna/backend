@@ -5,6 +5,7 @@ import com.lucerna.backend.auth.handler.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -36,6 +37,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                // WebConfig의 CORS 설정을 Spring Security 필터에 위임
+                .cors(Customizer.withDefaults())
                 // REST API 서버 → CSRF 보호 불필요
                 .csrf(AbstractHttpConfigurer::disable)
                 // JWT 인증 → 서버 측 세션 미사용

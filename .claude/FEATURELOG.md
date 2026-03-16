@@ -175,7 +175,64 @@ POST /auth/logout { idToken, refreshToken }
 
 ---
 
-## [FEAT-005] 소셜 인증 (Google / Apple / Kakao)
+## [FEAT-005] 회원 탈퇴 (`DELETE /api/v1/users/me`)
+
+**기능 이름**: 회원 탈퇴 — 서비스 DB Soft Delete + Keycloak 비활성화
+**현황**: `완료`
+
+---
+
+### 구현 내용
+
+| 파일 | 역할 |
+|------|------|
+| `KeycloakAdminService.java` | Admin Token 획득 + Keycloak 사용자 비활성화 |
+| `UserService.withdraw()` | DB Soft Delete + Lodge 삭제 + Keycloak 비활성화 |
+| `UserController` | `DELETE /api/v1/users/me` |
+| `User.withdraw()` | status=DELETED + email 마스킹 |
+| `LodgeRepository` | `deleteByUserId()` 추가 |
+| `ErrorCode` | `USER_ALREADY_WITHDRAWN(USER_003)`, `USER_WITHDRAW_FAILED(USER_004)` |
+| `KeycloakProperties` | `adminClientId`, `adminClientSecret` 필드 추가 |
+| `application-dev.yml` | admin client 설정 (secret은 환경변수 `KEYCLOAK_ADMIN_CLIENT_SECRET`) |
+
+### 탈퇴 흐름
+
+```
+DELETE /api/v1/users/me (AT 필수)
+    ↓
+@AuthenticationPrincipal Jwt → keycloakId 추출
+    ↓
+1단계 (서비스 DB, @Transactional):
+  - User.status = DELETED
+  - User.email = "deleted_{id}@deleted.invalid" (개인정보 마스킹)
+  - Lodge Hard Delete
+    ↓
+2단계 (Keycloak Admin API):
+  - lucerna-admin Client Credentials → Admin Token 획득
+  - PUT /admin/realms/lucerna_test/users/{keycloakId} → enabled=false
+  - 모든 세션 즉시 종료 (AT/RT 무효화)
+  - 실패 시 예외 → 1단계 롤백
+    ↓
+200 OK → 클라이언트: 로컬 토큰 삭제
+```
+
+### 30일 후 배치 삭제 (미구현)
+
+```
+status=DELETED AND updatedAt < 30일 전
+  → Lodge 잔여분 삭제 → User Hard Delete
+  → Keycloak Admin API: DELETE /users/{keycloakId}
+```
+
+### API 엔드포인트
+
+| 메서드 | 경로 | 응답 형식 | 설명 |
+|--------|------|-----------|------|
+| DELETE | `/api/v1/users/me` | `CommonResponse<Void>` | 회원 탈퇴 |
+
+---
+
+## [FEAT-006] 소셜 인증 (Google / Apple / Kakao)
 
 **현황**: `계획 중` → `Plans.md` 참고
 

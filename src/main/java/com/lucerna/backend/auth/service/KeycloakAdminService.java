@@ -6,9 +6,9 @@ import com.lucerna.backend.auth.config.KeycloakProperties;
 import com.lucerna.backend.common.exception.BusinessException;
 import com.lucerna.backend.common.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -34,13 +34,11 @@ public class KeycloakAdminService {
     private final ObjectMapper objectMapper;
 
     public KeycloakAdminService(KeycloakProperties keycloakProperties,
-                                RestClient.Builder restClientBuilder,
+                                @Qualifier("keycloakRestClient") RestClient restClient,
                                 ObjectMapper objectMapper) {
         this.keycloakProperties = keycloakProperties;
         this.objectMapper = objectMapper;
-        this.restClient = restClientBuilder
-                .requestFactory(new SimpleClientHttpRequestFactory())
-                .build();
+        this.restClient = restClient;
     }
 
     /**
