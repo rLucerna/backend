@@ -49,6 +49,8 @@ keycloak:
   token-uri:
   logout-uri:
   revoke-uri:
+  admin-client-id:
+  admin-client-secret:
 
 # --- 로깅 레벨 ---
 logging:

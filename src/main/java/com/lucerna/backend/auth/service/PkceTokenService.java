@@ -8,9 +8,9 @@ import com.lucerna.backend.auth.dto.TokenResponse;
 import com.lucerna.backend.common.exception.BusinessException;
 import com.lucerna.backend.common.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -35,15 +35,11 @@ public class PkceTokenService {
     private final ObjectMapper objectMapper;
 
     public PkceTokenService(KeycloakProperties keycloakProperties,
-                            RestClient.Builder restClientBuilder,
+                            @Qualifier("keycloakRestClient") RestClient restClient,
                             ObjectMapper objectMapper) {
         this.keycloakProperties = keycloakProperties;
         this.objectMapper = objectMapper;
-        // JDK HttpClient(Java 21 기본)는 Keycloak 응답 파싱 시 문제 발생
-        // HttpURLConnection 기반의 SimpleClientHttpRequestFactory 사용
-        this.restClient = restClientBuilder
-                .requestFactory(new SimpleClientHttpRequestFactory())
-                .build();
+        this.restClient = restClient;
     }
 
     /**
@@ -98,7 +94,7 @@ public class PkceTokenService {
                     .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
                         String body = new String(res.getBody().readAllBytes(), StandardCharsets.UTF_8);
                         log.error("Keycloak logout 5xx 오류 → status={}, body={}", res.getStatusCode(), body);
-                        throw new BusinessException(ErrorCode.AUTH_TOKEN_EXCHANGE_FAILED);
+                        throw new BusinessException(ErrorCode.AUTH_LOGOUT_FAILED);
                     })
                     .toBodilessEntity();
 
@@ -107,7 +103,7 @@ public class PkceTokenService {
             throw e;
         } catch (Exception e) {
             log.error("Keycloak 세션 종료 중 오류 발생: {}", e.getMessage(), e);
-            throw new BusinessException(ErrorCode.AUTH_TOKEN_EXCHANGE_FAILED);
+            throw new BusinessException(ErrorCode.AUTH_LOGOUT_FAILED);
         }
     }
 
