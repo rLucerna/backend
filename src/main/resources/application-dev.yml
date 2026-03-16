@@ -10,6 +10,13 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    defer-datasource-initialization: true
+
+  # --- 초기 데이터 (dev 전용 Mock 사용자) ---
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data-dev.sql
 
   # --- DevTools 핫 리로드 ---
   devtools:
