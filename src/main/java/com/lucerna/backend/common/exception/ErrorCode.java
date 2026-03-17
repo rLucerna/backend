@@ -29,6 +29,9 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_001", "사용자를 찾을 수 없습니다"),
     USER_EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER_002", "JWT에 이메일 정보가 포함되어 있지 않습니다"),
 
+    // === Blog 관련 ===
+    NOTEBOOK_DUPLICATE_NAME(HttpStatus.CONFLICT, "BLOG_001", "이미 존재하는 수첩 이름입니다"),
+
     // === Common ===
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "COMMON_001", "입력값이 올바르지 않습니다"),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON_500", "서버 내부 오류가 발생했습니다");

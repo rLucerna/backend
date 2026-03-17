@@ -5,6 +5,8 @@ import com.lucerna.backend.blog.dto.NotebookResponse;
 import com.lucerna.backend.blog.entity.Notebook;
 import com.lucerna.backend.blog.entity.VisibilityStatus;
 import com.lucerna.backend.blog.repository.NotebookRepository;
+import com.lucerna.backend.common.exception.BusinessException;
+import com.lucerna.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +27,7 @@ public class NotebookService {
         boolean isDuplicate = notebookRepository.existsByLodgeIdAndName(request.getLodgeId(), request.getName());
 
         if (isDuplicate) {
-            // 똑같은 이름이 있으면 생성 중단하고 에러 던지기! (나중에 409 Custom Exception으로 바꿀 예정)
-            throw new IllegalArgumentException("이미 존재하는 수첩 이름입니다.");
+            throw new BusinessException(ErrorCode.NOTEBOOK_DUPLICATE_NAME);
         }
 
         // 2. 문제없으면 DTO 상자에 있는 데이터를 꺼내서 Entity, Notebook으로 조립!
