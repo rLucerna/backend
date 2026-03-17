@@ -1,5 +1,39 @@
 ---
 
+날짜: 2026-03-16
+작업 이름: FEAT-005 회원 탈퇴 구현
+수정 대상: KeycloakProperties.java, UserService.java, UserController.java, LodgeRepository.java, User.java, ErrorCode.java, application.yml, application-dev.yml
+신규 파일: KeycloakAdminService.java
+결과: DELETE /api/v1/users/me — 서비스 DB Soft Delete + Keycloak 사용자 비활성화
+
+---
+
+## 구현 내용
+
+### 탈퇴 흐름
+1. `User.status = DELETED` + `email` 마스킹 (개인정보 즉시 파기)
+2. `Lodge` Hard Delete (프로필 데이터 즉시 삭제)
+3. Keycloak 사용자 비활성화 (`enabled=false`) → 모든 세션 즉시 종료
+4. Keycloak 실패 시 예외 발생 → `@Transactional`이 DB 변경 롤백
+
+### 설계 결정
+- Soft Delete: `UserStatus.DELETED` + email 마스킹 → 개인정보보호법 파기 요건 충족
+- 30일 후 배치 Hard Delete 예정 (keycloakId 유지 → 배치 시 Keycloak 완전 삭제)
+- Keycloak user disable: `lucerna-admin` Client Credentials로 Admin Token 획득 후 `PUT /admin/realms/{realm}/users/{id}`
+- 엔드포인트 `/api/v1/users/me`로 변경 (IDOR 방지)
+
+### KeycloakAdminService (신규)
+- `lucerna-admin` Confidential Client → `grant_type=client_credentials` → Admin AT 획득
+- `PUT /auth/admin/realms/lucerna_test/users/{keycloakId}` → `{"enabled": false}`
+
+### 설정 추가
+- `KeycloakProperties`: `adminClientId`, `adminClientSecret`
+- `application-dev.yml`: `admin-client-id`, `admin-client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET}`
+
+---
+
+---
+
 날짜: 2026-03-14
 작업 이름: FEAT-004 로그아웃 방식 재설계 — OIDC RP-Initiated Logout으로 전환
 수정 대상: PkceTokenService.java, AuthController.java, KeycloakProperties.java, LogoutRequest.java, application.yml, application-dev.yml, ErrorCode.java

@@ -13,4 +13,6 @@ public class KeycloakProperties {
     private String tokenUri;
     private String logoutUri;
     private String revokeUri;
+    private String adminClientId;
+    private String adminClientSecret;
 }
