@@ -139,7 +139,10 @@ ALTER TABLE "user_post_collection" ADD CONSTRAINT "PK_USER_POST_COLLECTION" PRIM
 ALTER TABLE "notebooks" ADD CONSTRAINT "PK_NOTEBOOKS" PRIMARY KEY ("id");
 ALTER TABLE "subscriptions" ADD CONSTRAINT "PK_SUBSCRIPTIONS" PRIMARY KEY ("subscriber_id", "target_lodge_id");
 
--- 3. 외래키(Foreign Key) 제약조건 추가
+-- 3. 유니크(Unique) 제약조건 추가
+ALTER TABLE "users" ADD CONSTRAINT "UQ_USERS_KEYCLOAK_ID" UNIQUE ("keycloak_id");
+
+-- 4. 외래키(Foreign Key) 제약조건 추가
 ALTER TABLE "letters" ADD CONSTRAINT "FK_users_TO_letters_sender" FOREIGN KEY ("sender_id") REFERENCES "users" ("id");
 ALTER TABLE "letters" ADD CONSTRAINT "FK_users_TO_letters_receiver" FOREIGN KEY ("receiver_id") REFERENCES "users" ("id");
 ALTER TABLE "letters" ADD CONSTRAINT "FK_letters_TO_letters_parent" FOREIGN KEY ("parent_letter_id") REFERENCES "letters" ("id");
@@ -169,7 +172,7 @@ ALTER TABLE "user_volunteer_favorites" ADD CONSTRAINT "FK_users_TO_user_voluntee
 ALTER TABLE "subscriptions" ADD CONSTRAINT "FK_users_TO_subscriptions" FOREIGN KEY ("subscriber_id") REFERENCES "users" ("id");
 ALTER TABLE "subscriptions" ADD CONSTRAINT "FK_lodges_TO_subscriptions" FOREIGN KEY ("target_lodge_id") REFERENCES "lodges" ("id");
 
--- 4. 코멘트(Comment) 추가
+-- 5. 코멘트(Comment) 추가
 COMMENT ON COLUMN "user_social"."provider" IS '구글, 트위터, 카카오 등';
 COMMENT ON COLUMN "user_social"."social_email" IS '소셜 로그인을 통해 얻은 계정 정보';
 COMMENT ON COLUMN "user_social"."linked_at" IS '연결 시각';

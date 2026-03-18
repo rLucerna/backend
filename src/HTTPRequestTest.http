@@ -1,0 +1,13 @@
+POST http://localhost:8081/api/v1/notebooks
+Content-Type: application/json
+
+{
+  "lodgeId": 1,
+  "name": "성빈이의 첫 번째 수첩",
+  "colorCode": "#FFFFFF",
+  "displayOrder": 1,
+  "visibilityStatus": "ALL"
+}
+
+### 수첩 목록 조회 API (비공개 필터링 테스트)
+GET http://localhost:8081/api/v1/notebooks?lodgeId=1

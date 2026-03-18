@@ -31,6 +31,9 @@ public enum ErrorCode {
     USER_ALREADY_WITHDRAWN(HttpStatus.BAD_REQUEST, "USER_003", "이미 탈퇴한 사용자입니다"),
     USER_WITHDRAW_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "USER_004", "회원 탈퇴 처리 중 오류가 발생했습니다"),
 
+    // === Blog 관련 ===
+    NOTEBOOK_DUPLICATE_NAME(HttpStatus.CONFLICT, "BLOG_001", "이미 존재하는 수첩 이름입니다"),
+
     // === Common ===
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "COMMON_001", "입력값이 올바르지 않습니다"),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON_500", "서버 내부 오류가 발생했습니다");
