@@ -4,7 +4,20 @@
 -- Mock 인증 필터(DevMockJwtFilter)가 사용하는 사용자 레코드
 -- ============================================================
 
--- Mock 개발 사용자 (DevMockJwtFilter의 MOCK_KEYCLOAK_ID와 일치해야 함)
+-- Mock 개발 사용자 목록
+-- DevMockJwtFilter: X-Mock-User 헤더로 user 전환 가능
+-- X-Mock-User 헤더 없음 → dev-mock-keycloak-id (기본값)
+-- X-Mock-User: dev-user-1 → dev-user-1 사용자로 테스트
+-- X-Mock-User: dev-user-2 → dev-user-2 사용자로 테스트
+
 INSERT INTO users (id, keycloak_id, email, status, last_login_at, created_at, updated_at)
-VALUES (nextval('users_id_seq'), 'dev-mock-keycloak-id', 'dev@lucerna.test', 'ACTIVE', NOW(), NOW(), NOW())
-ON CONFLICT (keycloak_id) DO NOTHING;
+SELECT nextval('users_id_seq'), 'dev-mock-keycloak-id', 'dev-mock-keycloak-id@lucerna.dev', 'ACTIVE', NOW(), NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE keycloak_id = 'dev-mock-keycloak-id');
+
+INSERT INTO users (id, keycloak_id, email, status, last_login_at, created_at, updated_at)
+SELECT nextval('users_id_seq'), 'dev-user-1', 'dev-user-1@lucerna.dev', 'ACTIVE', NOW(), NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE keycloak_id = 'dev-user-1');
+
+INSERT INTO users (id, keycloak_id, email, status, last_login_at, created_at, updated_at)
+SELECT nextval('users_id_seq'), 'dev-user-2', 'dev-user-2@lucerna.dev', 'ACTIVE', NOW(), NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE keycloak_id = 'dev-user-2');
